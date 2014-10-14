@@ -158,7 +158,11 @@ $(function() {
           from: cm.getCursor('from'), 
           to: cm.getCursor('to')
         };
-        window.prompt('Selection is:', JSON.stringify(sel));
+        window.prompt('Selection is:',
+                      'from: {line: ' + sel.from.line + ', ' +
+                             'ch: ' + sel.from.ch + '}, ' +
+                      'to: {line: ' + sel.to.line + ', ' +
+                           'ch: ' + sel.to.ch + '}');
       }
     });
 
