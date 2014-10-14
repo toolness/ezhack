@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="vendor/codemirror/codemirror.css">
+<style>
+.hackable {
+  background: yellow;
+  border: 1px solid black;
+  padding: 0 4px;
+}
+
+.hackable .color-sample {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  border: 1px solid black;
+  vertical-align: baseline;
+  margin-left: 4px;
+}
+</style>
+<title>EZHack</title>
+<p>Hello.</p>
+<ul>
+  <li><a href="?hackable=flyswat">flyswat</a></li>
+  <li><a href="?hackable=poundsplat">poundsplat</a></li>
+  <li><a href="?hackable=type-the-word">type-the-word</a></li>
+  <li><a href="?hackable=what-colour">what-colour</a></li>
+</ul>
+<div id="code"></div>
+<script src="vendor/jquery.js"></script>
+<script src="vendor/codemirror/codemirror.js"></script>
+<script src="vendor/codemirror/xml.js"></script>
+<script src="vendor/codemirror/css.js"></script>
+<script src="vendor/codemirror/javascript.js"></script>
+<script src="vendor/codemirror/htmlmixed.js"></script>
+<script>
+function ColorWidget(options) {
+  this.codeMirror = options.codeMirror;
+  this.value = this.codeMirror.getRange(options.from, options.to);
+  this.$el = $('<span class="hackable"></span>');
+  this.el = this.$el[0];
+  this.marker = this.codeMirror.markText(options.from, options.to, {
+    replacedWith: this.el
+  });
+  this.refresh();
+}
+
+ColorWidget.prototype = {
+  refresh: function() {
+    var colorSample = $('<span class="color-sample"></span>').css({
+      'background-color': this.value
+    });
+    this.$el.empty().text(this.value).append(colorSample);
+    this.marker.changed();
+  }
+};
+
+$(function() {
+  var hackable = 'poundsplat';
+
+  try {
+    hackable = window.location.search.match(/hackable=([A-Za-z0-9\-]+)/)[1];
+  } catch (e) {}
+
+  $.get('hackables/' + hackable + '/index.html', function(html) {
+    var cm = CodeMirror($('#code')[0], {
+      mode: 'htmlmixed',
+      lineNumbers: true,
+      lineWrapping: true,
+      readOnly: true,
+      value: html
+    });
+
+    $('#code').on('keypress', function(e) {
+      if (e.which == 32 && e.ctrlKey) {
+        e.preventDefault();
+        if (!cm.somethingSelected()) return;
+        var sel = {
+          from: cm.getCursor('from'), 
+          to: cm.getCursor('to')
+        };
+        window.prompt('Selection is:', JSON.stringify(sel));
+      }
+    });
+
+    var c = new ColorWidget({
+      from: {line:9, ch:22},
+      to: {line:9, ch:29},
+      codeMirror: cm
+    });
+  });
+});
+</script>
