@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Text Colour</title>
+    <link rel="icon" type="image/png" href="">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        background: #FFF;
+        color: #222;
+        font-size: 30px;
+        font-family: 'Open Sans Condensed', sans-serif;
+      }
+      main {
+        padding-top: 25px;
+        padding-bottom: 25px;
+        text-align: center;
+      }
+      .container {
+        margin: 0 auto;
+        width: 1080px;
+        overflow: hidden;
+        position: relative;
+      }
+      #question-section {
+        overflow: hidden;
+      }
+      h1 {
+        font-size: 30px;
+        font-weight: normal;
+      }
+      #look-for {
+        font-size: 40px;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      #question {
+        box-sizing: border-box;
+        font-family: 'Oswald', sans-serif;
+        font-size: 150px;
+        text-transform: capitalize;
+        overflow: hidden;
+        margin-top: 70px;
+        margin-bottom: 70px;
+      }
+      #question .parts {
+        float: left;
+      }
+      #question .parts.whole {
+        width: 100%;
+      }
+      #question .parts.half {
+        width: 50%;
+      }
+      #selections-section {
+      }
+      #selections-section ul {
+        list-style-type: none;
+        padding-left: 0;
+        overflow: hidden;
+        text-align: center;
+      }
+      #selections-section ul li {
+        float: left;
+        display: block;
+        text-transform: capitalize;
+        cursor: pointer;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        width: 12%;
+        margin-left: 2.3%;
+        margin-right: 2.3%;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        background: rgba(100,100,100,0.1);
+      }
+      #selections-section ul li:hover {
+        color: #FFF;
+        background: rgba(100,100,100,0.5);
+      }
+      footer {
+        text-align: right;
+        font-size: 12px;
+      }
+      a {
+        color: #B1F2CF;
+        text-decoration: none;
+        margin-right: 10px;
+      }
+      a:hover {
+        color: #3EC9A7;
+      }
+
+      @media (max-width: 1080px) {
+        .container {
+          width: 100%;
+        }
+        #question {
+          font-size: 120px;
+        }
+      }
+      @media (max-width: 700px) {
+        body {
+          font-size: 20px;
+        }
+        #question {
+          font-size: 90px;
+        }
+        main {
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+      }
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 20px;
+        }
+        #look-for {
+          font-size: 30px;
+        }
+        #question {
+          font-size: 50px;
+        }
+        #selections-section ul li {
+          width: 28.7%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <div style="display:none">Score: <span id="score">0</span></div>
+      <div id="question-section">
+        <h1>What's the colour of the text on the <span id="look-for">LEFT</span></h1>
+        <div id="question">
+          <div class="parts half">Green</div>
+          <div class="parts half">Red</div>
+        </div>
+      </div>
+      <div id="selections-section">
+        <ul>
+          <li data-ans="blue">blue</li>
+          <li data-ans="red">red</li>
+          <li data-ans="yellow">yellow</li>
+          <li data-ans="green">green</li>
+          <li data-ans="orange">orange</li>
+          <li data-ans="purple">purple</li>
+        </ul>
+      </div>
+    </main>
+    <footer class="container">
+      <a href="https://twitter.com/ohmmmavis" target="_blank">@ohmmmavis</a>
+    </footer>
+
+    <script src="tinygame.js"></script>
+    <script>
+      var score = 0;
+      var currentAns = "";
+      var textColourNames = [ "blue", "red", "yellow", "green", "orange", "purple"];
+      var textColourCodes = [ "#0db0ed", "#FF0000", "#fffd2b", "#12b448", "#ffa42e", "#a26ef5" ];
+      var answerIdx = 0;
+      function leftOrRight() {
+        return (  Math.floor(Math.random() * 2) == 0 ) ? true : false; // true if left is chosen
+      }
+      function randomize() {
+        return Math.floor( Math.random() * textColourNames.length );
+      }
+      function makeQuestion() {
+        answerIdx = randomize();
+        var colourCode = textColourCodes[answerIdx];
+        var leftOrRightLabel = document.querySelector("#look-for");
+        var leftDisplay = document.querySelector("#question .parts:first-child");
+        var rightDisplay = document.querySelector("#question .parts:last-child");
+        leftDisplay.textContent = textColourNames[randomize()];
+        rightDisplay.textContent = textColourNames[randomize()];
+        if ( leftOrRight() ) {
+          leftOrRightLabel.textContent = "left";
+          leftDisplay.style.color = colourCode;
+          rightDisplay.style.color = textColourCodes[randomize()];
+        } else {
+          leftOrRightLabel.textContent = "right";
+          leftDisplay.style.color = textColourCodes[randomize()];
+          rightDisplay.style.color = colourCode;
+        }
+      }
+      document.querySelector("#selections-section ul").addEventListener("click",function(event){
+        if ( event.target.hasAttribute("data-ans") ) {
+          console.log( event.target.getAttribute("data-ans") );
+          var playerAns = event.target.getAttribute("data-ans");
+          console.log( "player answer = " + playerAns);
+          console.log( "ANSWER should be = " + textColourNames[answerIdx]);
+          document.querySelector("#selections-section").innerHTML = "You selected " + playerAns;
+          if ( playerAns == textColourNames[answerIdx] ) {
+            score += 100;
+            Tinygame.win();
+          } else {
+            score -= 100;
+            Tinygame.lose();
+          }
+          document.querySelector("#score").textContent = score;
+          }
+      });
+
+      Tinygame.onplay = function() {
+        // Start accepting user input, animating sprites, etc...
+        console.log("Game started!");
+        makeQuestion();
+      };
+
+      Tinygame.onoutoftime = function() {
+        // Stop accepting user input, show ending animation, etc...
+        console.log("Player ran out of time!");
+      };
+
+    </script>
+
+
+  </body>
+</html>

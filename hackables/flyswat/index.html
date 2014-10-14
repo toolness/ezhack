@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="c64-pixelized.css">
+<style>
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+@keyframes flying {
+  /* Each sprite frame is 80px wide, so we just increment
+   * background-position by that amount each frame.
+   */
+
+  10% {
+    background-position: 0px 0px;
+  }
+
+  20% {
+    background-position: -80px 0px;
+  }
+
+  30% {
+    background-position: -160px 0px;    
+  }
+
+  40% {
+    background-position: -240px 0px;
+  }
+
+  50% {
+    background-position: -320px 0px;
+  }
+
+  60% {
+    background-position: -400px 0px;
+  }
+
+  70% {
+    background-position: -480px 0px;
+  }
+
+  80% {
+    background-position: -560px 0px;
+  }
+
+  90% {
+    background-position: -640px 0px;
+  }
+
+  100% {
+    background-position: -720px 0px;
+  }
+}
+
+@keyframes dying {
+  10% {
+    margin-top: 0px;
+  }
+
+  40% {
+    margin-top: 0px;
+    opacity: 1.0;
+  }
+
+  100% {
+    margin-top: 1000px;
+    opacity: 0;
+  }
+}
+
+.fly {
+  width: 80px;
+  height: 92px;
+  margin: 0 auto;
+  background-image: url(fly-flying.png);
+}
+
+.fly.flying {
+  animation-duration: 1s;
+  animation-name: flying;
+  animation-timing-function: step-start;
+  animation-iteration-count: infinite;
+}
+
+.fly.dying {
+  animation-duration: 2s;
+  animation-name: dying;
+  animation-fill-mode: forwards;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button {
+  border: none;
+  background: transparent;
+  position: absolute;
+  transition: top 1s, left 1s;
+  width: 140px;
+  height: 140px;
+}
+
+button label {
+  position: absolute;
+  width: 100%;
+  top: 100px;
+  left: 0px;
+  font-family: 'Commodore 64 Pixelized', monospace;
+  font-weight: normal;
+  font-size: 24px;
+}
+</style>
+<title>Game 1</title>
+<br>
+<button autocomplete="off">
+  <div class="fly flying"></div>
+  <label>tap me</label>
+</button>
+<script src="tinygame.js"></script>
+<script>
+var INTERVAL_MS = {easy: 1700, medium: 1400, hard: 1100};
+
+var html = document.querySelector('html');
+var button = document.querySelector('button');
+var buttonLabel = button.querySelector('label');
+var buttonFly = button.querySelector('.fly');
+var interval;
+
+// Returns a random integer between min and max
+// Using Math.round() will give you a non-uniform distribution!
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function win() {
+  Tinygame.win();
+  buttonLabel.textContent = 'HOORAY';
+  buttonFly.classList.remove('flying');
+  buttonFly.classList.add('dying');
+  html.style.backgroundColor = "#00ff00";
+  clearInterval(interval);
+}
+
+function moveButton() {
+  button.style.top = getRandomInt(0, html.offsetHeight -
+                                     button.offsetHeight) + "px";
+  button.style.left = getRandomInt(0, html.offsetWidth - 
+                                      button.offsetWidth) + "px";
+}
+
+button.ontouchstart = button.onmousedown = win;
+onload = moveButton;
+
+Tinygame.onplay = function() {
+  interval = setInterval(moveButton, INTERVAL_MS[Tinygame.difficulty]);
+  moveButton();
+};
+
+Tinygame.onoutoftime = function() {
+  button.querySelector('label').textContent = 'U SUK';
+  html.style.backgroundColor = "#ff0000";
+  clearInterval(interval);
+};
+</script>

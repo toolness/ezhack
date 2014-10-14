@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="c64-pixelized.css">
+<style>
+html {
+  height: 100%;
+  text-align: center;
+  font-family: 'Commodore 64 Pixelized', monospace;
+  font-weight: normal;
+}
+
+.instructions {
+  font-size: 32px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.controls {
+  margin: 1em;
+}
+
+.key {
+  display: inline-block;
+  background-color: #ddd;
+  padding: 8px;
+  margin: 2px;
+  border-radius: 5px;
+  box-shadow: -2px 2px 2px #888;
+}
+</style>
+<title>Game 3</title>
+<div class="instructions">GO RIGHT</div>
+<br>
+<canvas id="canvas"></canvas>
+<br>
+<div class="controls">
+  <span class="key">?</span> <span class="key">?</span>
+  or
+  <span class="key">A</span> <span class="key">D</span>
+</div>
+<script src="jquery.js"></script>
+<script src="coquette.js"></script>
+<script src="tinygame.js"></script>
+<script>
+  var Game = function (opts) {
+    
+    // These are set by the game for you to use as you see fit:
+    
+    var playTime = opts.playTime;      // seconds in game
+    var difficulty = opts.difficulty;  // "easy", "medium", or "hard"
+        
+    /*-- GAME configuration --*/
+    
+    var GAME_WIDTH = 500;
+    var GAME_HEIGHT = 150;
+    var GAME_BACKGROUND = "black";
+    
+    var WIN_MESSAGE = "HOORAY";
+    var LOSE_MESSAGE = "BETTER LUCK NEXT TIME";
+    
+    /*-- PLAYER configuration --*/
+    
+    // Player speed is in "pixels per tick"; game runs (most likely) at 60 ticks per second
+    //   The following formula moves the player fast enough to traverse three times the game width
+    //   within the game playTime
+    var PLAYER_SPEED = (GAME_WIDTH*3)/(playTime*60);
+    var PLAYER_START_POSITION = {
+      x: 10,
+      y: 131
+    };
+    var PLAYER_COLOR = "fuchsia";
+    var PLAYER_SIZE = {
+      x: 9,
+      y: 9
+    };
+    
+    /*-- CRUSHER configuration --*/
+    
+    var CRUSHER_COUNT = {
+      easy: 1,
+      medium: 3,
+      hard: 5
+    };
+    var CRUSHER_COLOR = "lightsteelblue";
+    var CRUSHER_SIZE = {
+      x: 20,
+      y: 40
+    };
+    // Sweep is the highest and lowest points the crusher reaches as it moves up and down
+    var CRUSHER_SWEEP = {
+      top: 0,
+      bottom: 140
+    };
+    var CRUSHER_SPEEDS = {
+      rising: PLAYER_SPEED * 0.4,
+      falling: PLAYER_SPEED * 2
+    };
+    
+    var SQUISH_FACTOR = 2;    // how flat the player splats!
+    
+    /*----- END CONFIGURATION ----*/
+    
+    var coq = this.coq = new Coquette(this, "canvas", GAME_WIDTH, GAME_HEIGHT, GAME_BACKGROUND);
+    this.gameover = false;
+
+    this.win = function win () {
+      this.gameover = true;
+      $('.instructions').html(WIN_MESSAGE);
+      Tinygame.win();
+    }
+
+    this.lose = function lose () {
+      this.gameover = true;
+      $('.instructions').html(LOSE_MESSAGE);
+      var progress = player.pos.x / GAME_WIDTH;
+      Tinygame.end(progress);
+    }
+
+    var player;
+    coq.entities.create(Player, { 
+      pos: PLAYER_START_POSITION, 
+      speed: PLAYER_SPEED, 
+      color: PLAYER_COLOR,
+      size: PLAYER_SIZE,
+      squishFactor: SQUISH_FACTOR,
+      zindex: -1
+    }, function (ent) { player = ent; });
+
+    var crushers = (CRUSHER_COUNT)[opts.difficulty];
+
+    function randStart () {
+      var sweep = CRUSHER_SWEEP.bottom - CRUSHER_SIZE.y - CRUSHER_SWEEP.top;
+      return CRUSHER_SWEEP.top + (Math.random() * sweep);
+    }
+
+    for (var i = 0; i < crushers; i++) {
+      var x = (GAME_WIDTH/crushers) * (i+1) - (GAME_WIDTH/crushers)/2 ;
+      var y = randStart();
+      coq.entities.create(Crusher, { 
+        pos: { x: x, y: y },
+        speeds: CRUSHER_SPEEDS,
+        color: CRUSHER_COLOR,
+        size: CRUSHER_SIZE,
+        sweep: CRUSHER_SWEEP,
+        state: Math.random() > 0.5 ? 'falling' : 'rising'
+      });
+    }
+  };
+
+  var Player = function (game, settings) {
+    this.game = game; 
+    var coq = this.game.coq;
+
+    // set some defaults
+    this.size = { x: 9, y: 9 };
+    this.boundingBox = this.game.coq.collider.RECTANGLE;
+
+    // copy in settings, potentially clobbering defaults
+    for (var i in settings) {
+      this[i] = settings[i];
+    }
+
+    // define our draw, update, and collision methods
+    this.draw = function (ctx) {
+      ctx.fillStyle = settings.color;
+      if (!this.squished) {
+        ctx.fillRect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+      }
+      else {
+        var factor = this.squishFactor;
+        ctx.fillRect(
+          this.pos.x - (this.size.x*factor)/2, 
+          this.pos.y + (this.size.y*(factor-1)/factor), 
+          this.size.x * factor, 
+          this.size.y / factor
+        );
+      }
+    };
+    this.update = function () {
+      if (!this.game.gameover) {
+        if (this.pos.x >= 490) {
+          this.game.win();
+        }
+        else {
+          var right = coq.inputter.down(coq.inputter.RIGHT_ARROW) || coq.inputter.down(coq.inputter.D);
+          var left = coq.inputter.down(coq.inputter.LEFT_ARROW) || coq.inputter.down(coq.inputter.A);
+          if (right) this.pos.x += this.speed; 
+          if (left) this.pos.x -= this.speed; 
+        }
+      }
+    };
+    this.collision = function (other, type) {
+      this.squished = true;
+      this.game.lose();
+    };
+  };
+
+  var Crusher = function (game, settings) {
+    this.game = game;
+    var coq = this.game.coq;
+
+    // set some defaults
+    this.boundingBox = this.game.coq.collider.RECTANGLE;
+    this.color = "#aaa";
+    this.size = { x: 20, y: 40 };
+    this.sweep = {
+      top: 0,
+      bottom: 139 
+    };
+    this.speeds = {
+      falling: 8,
+      rising: 2
+    };
+    this.state = 'falling';
+
+    // copy in settings, potentially clobbering defaults
+    for (var i in settings) {
+      this[i] = settings[i];
+    }
+
+    // define our draw and update methods
+    this.draw = function (ctx) {
+      ctx.fillStyle = this.color;
+      ctx.fillRect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+    };
+    this.update = function () {
+      this[this.state]();
+    };
+
+    // some internals
+    this.falling = function () {
+      if (this.pos.y >= this.sweep.bottom - this.size.y) {
+        this.state = "rising";
+      }
+      else {
+        this.pos.y += this.speeds.falling;
+        this.pos.y = Math.min(this.pos.y, this.sweep.bottom);
+      }
+    };
+    this.rising = function () {
+      if (this.pos.y <= this.sweep.top) {
+        this.state = "falling";
+      }
+      else {
+        this.pos.y -= this.speeds.rising;
+        this.pos.y = Math.max(this.pos.y, this.sweep.top);
+      }
+    };
+  };
+
+  Tinygame.onplay = function () {
+    var game = new Game({
+      playTime: Tinygame.playTime,
+      difficulty: Tinygame.difficulty
+    });
+    Tinygame.onoutoftime = game.lose.bind(game);
+  };
+</script>
