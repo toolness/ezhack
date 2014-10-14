@@ -54,6 +54,16 @@ ColorWidget.prototype = {
   }
 };
 
+var hackables = {
+  'type-the-word': function(codeMirror) {
+    new ColorWidget({
+      from: {line:9, ch:22},
+      to: {line:9, ch:29},
+      codeMirror: codeMirror
+    });
+  }
+};
+
 $(function() {
   var hackable = 'poundsplat';
 
@@ -82,11 +92,8 @@ $(function() {
       }
     });
 
-    var c = new ColorWidget({
-      from: {line:9, ch:22},
-      to: {line:9, ch:29},
-      codeMirror: cm
-    });
+    if (hackable in hackables)
+      hackables[hackable](cm);
   });
 });
 </script>
