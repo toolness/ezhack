@@ -98,23 +98,43 @@ function ColorWidget(options) {
   });
 
   this.codeMirror = options.codeMirror;
-  this.$el = $('<input class="hackable"></input>')
-    .attr('title', options.title || 'Click to edit color.');
-  this.el = this.$el[0];
-  this.marker = this.codeMirror.markText(options.from, options.to, {
-    replacedWith: this.el
-  });
-  this.picker = new jscolor.color(this.el, {});
-  this.value = this.codeMirror.getRange(options.from, options.to);
+  this.title = options.title;
+  this._buildWidget(options.from, options.to);
 }
 
 ColorWidget.prototype = {
+  _buildWidget: function(from, to) {
+    this.$el = $('<input class="hackable"></input>')
+      .attr('title', this.title || 'Click to edit color.');
+    this.el = this.$el[0];
+    this.marker = this.codeMirror.markText(from, to, {
+      replacedWith: this.el
+    });
+    this.picker = new jscolor.color(this.el, {});
+    this.value = this.codeMirror.getRange(from, to);
+  },
   _getValue: function() {
     return this.picker.toString();
   },
   _setValue: function(newValue) {
     this.picker.fromString(newValue);
     this.marker.changed();
+  },
+  reflect: function() {
+    // Reflect our current value into the code.
+    //
+    // Strangely, there is no way to change the value of the underlying
+    // code that our marker points at without destroying the marker too,
+    // so we'll need to rebuild our marker and associated widget.
+
+    var where = this.marker.find();
+    var value = this.value;
+    this.marker.clear();
+    this.codeMirror.replaceRange(value, where.from, where.to);
+    var newTo = this.codeMirror.posFromIndex(
+      this.codeMirror.indexFromPos(where.from) + value.length
+    );
+    this._buildWidget(where.from, newTo);
   }
 };
 
