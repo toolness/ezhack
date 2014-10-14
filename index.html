@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=600, initial-scale=1">
 <link rel="stylesheet" href="vendor/codemirror/codemirror.css">
+<link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.css">
 <style>
 * {
   -moz-box-sizing: border-box;
@@ -73,16 +74,58 @@ ul.hackables li a.selected {
   background: yellow;
   pointer-events: none;
 }
+
+ul.hackables li a[role="run"] {
+  background: green;
+  color: white;
+}
+
+#iframe-holder {
+  z-index: 5000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  width: 100%;
+  height: 100%;
+}
+
+#iframe-holder iframe {
+  display: block;
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+#iframe-holder a[role="stop"] {
+  display: block;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5001;
+  background: red;
+  color: white;
+  text-decoration: none;
+}
 </style>
 <title>EZHack</title>
+<div id="editor">
 <p>You can safely edit <em>parts</em> of the the HTML, CSS, and JavaScript below by tinkering with widgets embedded in the source code.</p>
 <ul class="hackables">
   <li><a href="?hackable=flyswat">flyswat</a></li>
   <li><a href="?hackable=poundsplat">poundsplat</a></li>
   <li><a href="?hackable=type-the-word">type-the-word</a></li>
   <li><a href="?hackable=what-colour">what-colour</a></li>
+  <li><a href="#" role="run"><i class="fa fa-play"></i> Run</a></li>
 </ul>
 <div id="code"></div>
+</div>
+<div id="iframe-holder" style="display: none">
+  <a href="#" role="stop"><i class="fa fa-stop"></i> Stop</a>
+</div>
 <script src="vendor/jquery.js"></script>
 <script src="vendor/codemirror/codemirror.js"></script>
 <script src="vendor/codemirror/xml.js"></script>
@@ -173,14 +216,48 @@ function setupDebugFunctionality(codeMirror, fields) {
   window.c = codeMirror;
 }
 
+function stopGame() {
+  $('#iframe-holder').hide().find('iframe').remove();
+  $('#editor').show();
+}
+
+function runGame(url, codeMirror, fields) {
+  Object.keys(fields).forEach(function(fieldName) {
+    fields[fieldName].reflect();
+  });
+  var html = codeMirror.getValue();
+  var iframe = document.createElement('iframe');
+  $('#iframe-holder').show().prepend(iframe);
+  var doc = iframe.contentDocument;
+  doc.open();
+  doc.write('<base href="' + url + '">');
+  doc.write(html);
+  doc.close();
+  setupGlobalKeybindings(iframe.contentWindow);
+  iframe.focus();
+  $('#editor').hide();
+}
+
+function setupGlobalKeybindings(window) {
+  window.addEventListener('keyup', function(e) {
+    if (e.which == 27) {
+      e.preventDefault();
+      stopGame();
+      $(window).focus();
+    }
+  }, false);
+}
+
 $(function() {
   var hackable = 'type-the-word';
+  var hackableURL;
 
   try {
     hackable = window.location.search.match(/hackable=([A-Za-z0-9\-]+)/)[1];
   } catch (e) {}
 
-  $.get('hackables/' + hackable + '/index.html', function(html) {
+  hackableURL = 'hackables/' + hackable + '/index.html';
+  $.get(hackableURL, function(html) {
     var cm = CodeMirror($('#code')[0], {
       mode: 'htmlmixed',
       lineNumbers: true,
@@ -194,6 +271,17 @@ $(function() {
 
     $('a[href="?hackable=' + hackable + '"]').addClass('selected');
     setupDebugFunctionality(cm, fields);
+    setupGlobalKeybindings(window);
+
+    $('a[role="stop"]').click(function(e) {
+      e.preventDefault();
+      stopGame();
+    });
+
+    $('a[role="run"]').click(function(e) {
+      e.preventDefault();
+      runGame(hackableURL, cm, fields);
+    });
   });
 });
 </script>
