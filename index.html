@@ -130,6 +130,29 @@ var hackables = {
   }
 };
 
+function setupDebugFunctionality(codeMirror, fields) {
+  // Press CTRL+SPACE to see selection extents.
+  $(codeMirror.getWrapperElement()).on('keypress', function(e) {
+    if (e.which == 32 && e.ctrlKey) {
+      e.preventDefault();
+      if (!codeMirror.somethingSelected()) return;
+      var sel = {
+        from: codeMirror.getCursor('from'), 
+        to: codeMirror.getCursor('to')
+      };
+      window.prompt('Selection is:',
+                    'from: {line: ' + sel.from.line + ', ' +
+                           'ch: ' + sel.from.ch + '}, ' +
+                    'to: {line: ' + sel.to.line + ', ' +
+                         'ch: ' + sel.to.ch + '}');
+    }
+  });
+
+  // These should be accessed for debugging ONLY.
+  window.f = fields;
+  window.c = codeMirror;
+}
+
 $(function() {
   var hackable = 'type-the-word';
 
@@ -147,31 +170,10 @@ $(function() {
       theme: 'default faded',
       value: html
     });
+    var fields = hackable in hackables ? hackables[hackable](cm) : null;
 
     $('a[href="?hackable=' + hackable + '"]').addClass('selected');
-
-    $('#code').on('keypress', function(e) {
-      if (e.which == 32 && e.ctrlKey) {
-        e.preventDefault();
-        if (!cm.somethingSelected()) return;
-        var sel = {
-          from: cm.getCursor('from'), 
-          to: cm.getCursor('to')
-        };
-        window.prompt('Selection is:',
-                      'from: {line: ' + sel.from.line + ', ' +
-                             'ch: ' + sel.from.ch + '}, ' +
-                      'to: {line: ' + sel.to.line + ', ' +
-                           'ch: ' + sel.to.ch + '}');
-      }
-    });
-
-    if (hackable in hackables) {
-      var fields = hackables[hackable](cm);
-
-      // This should be accessed for debugging ONLY.
-      window.f = fields;
-    }
+    setupDebugFunctionality(cm, fields);
   });
 });
 </script>
