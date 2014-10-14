@@ -6,6 +6,7 @@
 .hackable {
   background: yellow;
   border: 1px solid black;
+  border-radius: 0;
   padding: 0 4px;
   font-family: inherit;
   font-size: inherit;
@@ -19,6 +20,31 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+.cm-s-faded { color: gray; }
+.cm-s-faded .cm-keyword {opacity: 0.66;}
+.cm-s-faded .cm-atom {opacity: 0.66;}
+.cm-s-faded .cm-number {opacity: 0.66;}
+.cm-s-faded .cm-def {opacity: 0.66;}
+.cm-s-faded .cm-variable,
+.cm-s-faded .cm-punctuation,
+.cm-s-faded .cm-property,
+.cm-s-faded .cm-operator {opacity: 0.66;}
+.cm-s-faded .cm-variable-2 {opacity: 0.66;}
+.cm-s-faded .cm-variable-3 {opacity: 0.66;}
+.cm-s-faded .cm-comment {opacity: 0.66;}
+.cm-s-faded .cm-string {opacity: 0.66;}
+.cm-s-faded .cm-string-2 {opacity: 0.66;}
+.cm-s-faded .cm-meta {opacity: 0.66;}
+.cm-s-faded .cm-qualifier {opacity: 0.66;}
+.cm-s-faded .cm-builtin {opacity: 0.66;}
+.cm-s-faded .cm-bracket {opacity: 0.66;}
+.cm-s-faded .cm-tag {opacity: 0.66;}
+.cm-s-faded .cm-attribute {opacity: 0.66;}
+.cm-s-faded .cm-header {opacity: 0.66;}
+.cm-s-faded .cm-quote {opacity: 0.66;}
+.cm-s-faded .cm-hr {opacity: 0.66;}
+.cm-s-faded .cm-link {opacity: 0.66;}
 
 ul.hackables {
   list-style-type: none;
@@ -99,6 +125,7 @@ $(function() {
       lineWrapping: true,
       readOnly: true,
       viewportMargin: Infinity,
+      theme: 'default faded',
       value: html
     });
 
