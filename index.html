@@ -9,10 +9,40 @@
   font-family: inherit;
   font-size: inherit;
 }
+
+.CodeMirror {
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+ul.hackables {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul.hackables li {
+  display: inline-block;
+  border: 1px dotted gray;
+}
+
+ul.hackables li a {
+  display: inline-block;
+  padding: 10px;
+  text-decoration: none;
+  color: black;
+}
+
+ul.hackables li a.selected {
+  background: yellow;
+  pointer-events: none;
+}
 </style>
 <title>EZHack</title>
-<p>Hello.</p>
-<ul>
+<ul class="hackables">
   <li><a href="?hackable=flyswat">flyswat</a></li>
   <li><a href="?hackable=poundsplat">poundsplat</a></li>
   <li><a href="?hackable=type-the-word">type-the-word</a></li>
@@ -54,7 +84,7 @@ var hackables = {
 };
 
 $(function() {
-  var hackable = 'poundsplat';
+  var hackable = 'type-the-word';
 
   try {
     hackable = window.location.search.match(/hackable=([A-Za-z0-9\-]+)/)[1];
@@ -66,8 +96,11 @@ $(function() {
       lineNumbers: true,
       lineWrapping: true,
       readOnly: true,
+      viewportMargin: Infinity,
       value: html
     });
+
+    $('a[href="?hackable=' + hackable + '"]').addClass('selected');
 
     $('#code').on('keypress', function(e) {
       if (e.which == 32 && e.ctrlKey) {
