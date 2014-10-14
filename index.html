@@ -92,8 +92,12 @@ ul.hackables li a.selected {
 <script src="vendor/jscolor/jscolor.js"></script>
 <script>
 function ColorWidget(options) {
+  Object.defineProperty(this, 'value', {
+    get: this._getValue,
+    set: this._setValue
+  });
+
   this.codeMirror = options.codeMirror;
-  this.value = this.codeMirror.getRange(options.from, options.to);
   this.$el = $('<input class="hackable"></input>')
     .attr('title', options.title || 'Click to edit color.');
   this.el = this.$el[0];
@@ -101,19 +105,28 @@ function ColorWidget(options) {
     replacedWith: this.el
   });
   this.picker = new jscolor.color(this.el, {});
-  this.picker.fromString(this.value);
-  this.marker.changed();
+  this.value = this.codeMirror.getRange(options.from, options.to);
 }
 
-ColorWidget.prototype = {};
+ColorWidget.prototype = {
+  _getValue: function() {
+    return this.picker.toString();
+  },
+  _setValue: function(newValue) {
+    this.picker.fromString(newValue);
+    this.marker.changed();
+  }
+};
 
 var hackables = {
   'type-the-word': function(codeMirror) {
-    new ColorWidget({
-      from: {line:9, ch:23},
-      to: {line:9, ch:29},
-      codeMirror: codeMirror
-    });
+    return {
+      'winbg': new ColorWidget({
+        from: {line:9, ch:23},
+        to: {line:9, ch:29},
+        codeMirror: codeMirror
+      })
+    };
   }
 };
 
@@ -149,8 +162,12 @@ $(function() {
       }
     });
 
-    if (hackable in hackables)
-      hackables[hackable](cm);
+    if (hackable in hackables) {
+      var fields = hackables[hackable](cm);
+
+      // This should be accessed for debugging ONLY.
+      window.f = fields;
+    }
   });
 });
 </script>
