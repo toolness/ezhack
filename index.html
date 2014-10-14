@@ -187,6 +187,12 @@ var hackables = {
       'winbg': new ColorWidget({
         from: {line:9, ch:23},
         to: {line:9, ch:29},
+        title: 'Background color for win screen.',
+        codeMirror: codeMirror
+      }),
+      'losebg': new ColorWidget({
+        from: {line: 13, ch: 23}, to: {line: 13, ch: 29},
+        title: 'Background color for lose screen.',
         codeMirror: codeMirror
       })
     };
@@ -195,7 +201,7 @@ var hackables = {
 
 function setupDebugFunctionality(codeMirror, fields) {
   // Press CTRL+SPACE to see selection extents.
-  $(codeMirror.getWrapperElement()).on('keypress', function(e) {
+  $(codeMirror.getWrapperElement()).on('keyup', function(e) {
     if (e.which == 32 && e.ctrlKey) {
       e.preventDefault();
       if (!codeMirror.somethingSelected()) return;
