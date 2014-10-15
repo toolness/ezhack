@@ -1,6 +1,6 @@
 var hackables = {
   'type-the-word': function(codeMirror) {
-    return {
+    var fields = {
       'winbg': new ColorWidget({
         from: {line:9, ch:22}, to: {line:9, ch:29},
         title: 'Background color for win screen.',
@@ -39,5 +39,22 @@ var hackables = {
         codeMirror: codeMirror
       })
     };
+    [
+      {from: {line: 59, ch: 6}, to: {line: 59, ch: 11}},
+      {from: {line: 60, ch: 6}, to: {line: 60, ch: 12}},
+      {from: {line: 61, ch: 6}, to: {line: 61, ch: 12}},
+      {from: {line: 62, ch: 6}, to: {line: 62, ch: 12}},
+      {from: {line: 63, ch: 6}, to: {line: 63, ch: 12}},
+      {from: {line: 64, ch: 6}, to: {line: 64, ch: 12}},
+      {from: {line: 65, ch: 6}, to: {line: 65, ch: 11}}
+    ].forEach(function(where, i) {
+      fields['easy_word_' + i] = new TextWidget(_.extend(where, {
+        title: 'A potential word the player must type in easy mode.',
+        prompt: 'Enter a new word for easy mode (must be all caps).',
+        filter: TextWidget.filters.js,
+        codeMirror: codeMirror
+      }));
+    });
+    return fields;
   }
 };
