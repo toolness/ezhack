@@ -29,29 +29,23 @@
   overflow-y: hidden;
 }
 
-ul.hackables {
+ul.toolbar {
   list-style-type: none;
   padding: 0;
 }
 
-ul.hackables li {
+ul.toolbar li {
   display: inline-block;
-  border: 1px dotted gray;
 }
 
-ul.hackables li a {
+ul.toolbar li a {
   display: inline-block;
   padding: 10px;
   text-decoration: none;
   color: black;
 }
 
-ul.hackables li a.selected {
-  background: yellow;
-  pointer-events: none;
-}
-
-ul.hackables li a[role="run"] {
+ul.toolbar li a[role="run"] {
   background: green;
   color: white;
 }
@@ -90,11 +84,16 @@ ul.hackables li a[role="run"] {
 <title>EZHack</title>
 <div id="editor">
 <p>You can safely edit <em>parts</em> of the the HTML, CSS, and JavaScript below by tinkering with widgets embedded in the source code.</p>
-<ul class="hackables">
-  <li><a href="?hackable=flyswat">flyswat</a></li>
-  <li><a href="?hackable=poundsplat">poundsplat</a></li>
-  <li><a href="?hackable=type-the-word">type-the-word</a></li>
-  <li><a href="?hackable=what-colour">what-colour</a></li>
+<ul class="toolbar">
+  <li>
+    Edit:
+    <select id="hackables">
+      <option value="flyswat">Flyswat</option>
+      <option value="poundsplat">Poundsplat</option>
+      <option value="type-the-word">Type The Word</option>
+      <option value="what-colour">What Colour Is It?</option>
+    </select>
+  </li>
   <li><a href="#" role="run"><i class="fa fa-play"></i> Run</a></li>
 </ul>
 <div id="code"></div>
@@ -248,6 +247,13 @@ $(function() {
   } catch (e) {}
 
   hackableURL = 'hackables/' + hackable + '/index.html';
+  $('#hackables')
+    .val(hackable)
+    .on('change', function() {
+      window.location.search = '?hackable=' + this.value;
+    })
+    .cancelZoom();
+
   $.get(hackableURL, function(html) {
     var cm = CodeMirror($('#code')[0], {
       mode: 'htmlmixed',
@@ -261,7 +267,6 @@ $(function() {
     var fields = hackable in hackables ? hackables[hackable](cm) : null;
 
     $(cm.getInputField()).cancelZoom();
-    $('a[href="?hackable=' + hackable + '"]').addClass('selected');
     setupDebugFunctionality(cm, fields);
     setupGlobalKeybindings(window);
 
