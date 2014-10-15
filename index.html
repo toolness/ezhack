@@ -88,7 +88,7 @@ ul.toolbar li a[role="run"] {
   <li>
     Edit:
     <select id="hackables">
-      <option value="flyswat">Flyswat</option>
+      <option value="flyswat" selected>Flyswat</option>
       <option value="poundsplat">Poundsplat</option>
       <option value="type-the-word">Type The Word</option>
       <option value="what-colour">What Colour Is It?</option>
@@ -176,7 +176,7 @@ function setupGlobalKeybindings(targetWindow) {
 }
 
 $(function() {
-  var hackable = 'type-the-word';
+  var hackable = $('#hackables option[selected]').val();
   var hackableURL;
 
   try {
