@@ -1,4 +1,40 @@
 var hackables = {
+  'flyswat': function(codeMirror) {
+    return {
+      'tapme': new TextWidget({
+        from: {line: 118, ch: 9}, to: {line: 118, ch: 15},
+        title: 'Text instructions, shown below the fly.',
+        prompt: 'Enter new instructions.',
+        filter: TextWidget.filters.html,
+        codeMirror: codeMirror
+      }),
+      'winbg': new ColorWidget({
+        from: {line: 141, ch: 32}, to: {line: 141, ch: 39},
+        title: 'Background color for win screen.',
+        codeMirror: codeMirror
+      }),
+      'losebg': new ColorWidget({
+        from: {line: 162, ch: 32}, to: {line: 162, ch: 39},
+        title: 'Background color for lose screen.',
+        codeMirror: codeMirror
+      }),
+      'wintext': new TextWidget({
+        from: {line: 138, ch: 28}, to: {line: 138, ch: 36},
+        title: 'Text shown when player wins.',
+        prompt: 'Enter new win text.',
+        filter: TextWidget.filters.js,
+        codeMirror: codeMirror
+      }),
+      'losetext': new TextWidget({
+        from: {line: 161, ch: 46}, to: {line: 161, ch: 53},
+        title: 'Text shown when player loses.',
+        prompt: 'Enter new lose text.',
+        filter: TextWidget.filters.js,
+        codeMirror: codeMirror
+      })
+
+    };
+  },
   'type-the-word': function(codeMirror) {
     var fields = {
       'winbg': new ColorWidget({
