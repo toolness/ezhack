@@ -49,7 +49,7 @@ var hackables = {
       {from: {line: 65, ch: 6}, to: {line: 65, ch: 11}}
     ].forEach(function(where, i) {
       fields['easy_word_' + i] = new TextWidget(_.extend(where, {
-        title: 'A potential word the player must type in easy mode.',
+        title: 'A potential word for the player to type in easy mode.',
         prompt: 'Enter a new word for easy mode (must be all caps).',
         filter: TextWidget.filters.js,
         codeMirror: codeMirror
