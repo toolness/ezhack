@@ -16,6 +16,13 @@ var hackables = {
         title: 'Color of letters to be typed.',
         defaultValue: '#000000',
         codeMirror: codeMirror
+      }),
+      'instructions': new TextWidget({
+        from: {line: 47, ch: 26}, to: {line: 47, ch: 39},
+        title: 'Instruction text.',
+        prompt: 'Enter new instructions.',
+        filter: TextWidget.filters.html,
+        codeMirror: codeMirror
       })
     };
   }
