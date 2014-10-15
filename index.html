@@ -183,9 +183,9 @@ var hackables = {
 };
 
 function setupDebugFunctionality(codeMirror, fields) {
-  // Press CTRL+SPACE to see selection extents.
+  // Press CTRL+SHIFT+SPACE to see selection extents.
   $(codeMirror.getWrapperElement()).on('keyup', function(e) {
-    if (e.which == 32 && e.ctrlKey) {
+    if (e.which == 32 && e.ctrlKey && e.shiftKey) {
       e.preventDefault();
       if (!codeMirror.somethingSelected()) return;
       var sel = {
@@ -211,6 +211,7 @@ function stopGame() {
 }
 
 function runGame(url, codeMirror, fields) {
+  $('#iframe-holder').find('iframe').remove();
   Object.keys(fields).forEach(function(fieldName) {
     fields[fieldName].reflect();
   });
@@ -228,12 +229,15 @@ function runGame(url, codeMirror, fields) {
   window.scrollTo(0, 0);
 }
 
-function setupGlobalKeybindings(window) {
-  window.addEventListener('keyup', function(e) {
+function setupGlobalKeybindings(targetWindow) {
+  targetWindow.addEventListener('keyup', function(e) {
     if (e.which == 27) {
       e.preventDefault();
       stopGame();
       $(window).focus();
+    } else if (e.which == 32 && e.ctrlKey && !e.shiftKey) {
+      e.preventDefault(); 
+      $('a[role="run"]').click();
     }
   }, false);
 }
