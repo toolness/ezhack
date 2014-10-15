@@ -118,11 +118,11 @@ function ColorWidget(options) {
 
   this.codeMirror = options.codeMirror;
   this.title = options.title;
-  this._buildWidget(options.from, options.to);
+  this._buildWidget(options.from, options.to, options.defaultValue);
 }
 
 ColorWidget.prototype = {
-  _buildWidget: function(from, to) {
+  _buildWidget: function(from, to, value) {
     this.$el = $('<input class="hackable"></input>')
       .attr('title', this.title || 'Click to edit color.');
     this.el = this.$el[0];
@@ -130,7 +130,7 @@ ColorWidget.prototype = {
       replacedWith: this.el
     });
     this.picker = new jscolor.color(this.el, {hash: true});
-    this.value = this.codeMirror.getRange(from, to);
+    this.value = value || this.codeMirror.getRange(from, to);
   },
   _getValue: function() {
     return this.picker.toString();
@@ -169,6 +169,12 @@ var hackables = {
       'losebg': new ColorWidget({
         from: {line: 13, ch: 22}, to: {line: 13, ch: 29},
         title: 'Background color for lose screen.',
+        codeMirror: codeMirror
+      }),
+      'lettercolor': new ColorWidget({
+        from: {line: 36, ch: 11}, to: {line: 36, ch: 16},
+        title: 'Color of letters to be typed.',
+        defaultValue: '#000000',
         codeMirror: codeMirror
       })
     };
