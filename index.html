@@ -198,7 +198,7 @@ $(function() {
       theme: 'default faded',
       value: html
     });
-    var fields = hackable in hackables ? hackables[hackable](cm) : null;
+    var fields = hackable in hackables ? hackables[hackable](cm) : {};
 
     $(cm.getInputField()).cancelZoom();
     setupDebugFunctionality(cm, fields);
