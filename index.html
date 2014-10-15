@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta name="viewport" content="width=600, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="vendor/codemirror/codemirror.css">
 <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.css">
 <link rel="stylesheet" href="codemirror-faded.css">
@@ -103,6 +103,7 @@ ul.hackables li a[role="run"] {
   <a href="#" role="stop"><i class="fa fa-stop"></i> Stop</a>
 </div>
 <script src="vendor/jquery.js"></script>
+<script src="vendor/cancel-zoom.js"></script>
 <script src="vendor/codemirror/codemirror.js"></script>
 <script src="vendor/codemirror/xml.js"></script>
 <script src="vendor/codemirror/css.js"></script>
@@ -130,6 +131,7 @@ ColorWidget.prototype = {
       replacedWith: this.el
     });
     this.picker = new jscolor.color(this.el, {hash: true});
+    this.$el.cancelZoom();
     this.value = value || this.codeMirror.getRange(from, to);
   },
   _getValue: function() {
@@ -257,6 +259,7 @@ $(function() {
     });
     var fields = hackable in hackables ? hackables[hackable](cm) : null;
 
+    $(cm.getInputField()).cancelZoom();
     $('a[href="?hackable=' + hackable + '"]').addClass('selected');
     setupDebugFunctionality(cm, fields);
     setupGlobalKeybindings(window);
