@@ -129,7 +129,7 @@ ColorWidget.prototype = {
     this.marker = this.codeMirror.markText(from, to, {
       replacedWith: this.el
     });
-    this.picker = new jscolor.color(this.el, {});
+    this.picker = new jscolor.color(this.el, {hash: true});
     this.value = this.codeMirror.getRange(from, to);
   },
   _getValue: function() {
@@ -161,13 +161,13 @@ var hackables = {
   'type-the-word': function(codeMirror) {
     return {
       'winbg': new ColorWidget({
-        from: {line:9, ch:23},
+        from: {line:9, ch:22},
         to: {line:9, ch:29},
         title: 'Background color for win screen.',
         codeMirror: codeMirror
       }),
       'losebg': new ColorWidget({
-        from: {line: 13, ch: 23}, to: {line: 13, ch: 29},
+        from: {line: 13, ch: 22}, to: {line: 13, ch: 29},
         title: 'Background color for lose screen.',
         codeMirror: codeMirror
       })
