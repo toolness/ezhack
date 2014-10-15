@@ -8,6 +8,11 @@ var hackables = {
         filter: TextWidget.filters.html,
         codeMirror: codeMirror
       }),
+      'bg': new ColorWidget({
+        from: {line: 166, ch: 30}, to: {line: 166, ch: 37},
+        title: 'Background color for the game.',
+        codeMirror: codeMirror
+      }),
       'winbg': new ColorWidget({
         from: {line: 141, ch: 32}, to: {line: 141, ch: 39},
         title: 'Background color for win screen.',
