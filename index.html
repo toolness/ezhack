@@ -226,6 +226,7 @@ function runGame(url, codeMirror, fields) {
   setupGlobalKeybindings(iframe.contentWindow);
   iframe.focus();
   $('#editor').hide();
+  window.scrollTo(0, 0);
 }
 
 function setupGlobalKeybindings(window) {
