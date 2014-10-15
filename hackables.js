@@ -2,8 +2,7 @@ var hackables = {
   'type-the-word': function(codeMirror) {
     return {
       'winbg': new ColorWidget({
-        from: {line:9, ch:22},
-        to: {line:9, ch:29},
+        from: {line:9, ch:22}, to: {line:9, ch:29},
         title: 'Background color for win screen.',
         codeMirror: codeMirror
       }),
