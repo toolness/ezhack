@@ -109,79 +109,9 @@ ul.toolbar li a[role="run"] {
 <script src="vendor/codemirror/javascript.js"></script>
 <script src="vendor/codemirror/htmlmixed.js"></script>
 <script src="vendor/jscolor/jscolor.js"></script>
+<script src="color-widget.js"></script>
+<script src="hackables.js"></script>
 <script>
-function ColorWidget(options) {
-  Object.defineProperty(this, 'value', {
-    get: this._getValue,
-    set: this._setValue
-  });
-
-  this.codeMirror = options.codeMirror;
-  this.title = options.title;
-  this._buildWidget(options.from, options.to, options.defaultValue);
-}
-
-ColorWidget.prototype = {
-  _buildWidget: function(from, to, value) {
-    this.$el = $('<input class="hackable"></input>')
-      .attr('title', this.title || 'Click to edit color.');
-    this.el = this.$el[0];
-    this.marker = this.codeMirror.markText(from, to, {
-      replacedWith: this.el
-    });
-    this.picker = new jscolor.color(this.el, {hash: true});
-    this.$el.cancelZoom();
-    this.value = value || this.codeMirror.getRange(from, to);
-  },
-  _getValue: function() {
-    return this.picker.toString();
-  },
-  _setValue: function(newValue) {
-    this.picker.fromString(newValue);
-    this.marker.changed();
-  },
-  reflect: function() {
-    // Reflect our current value into the code.
-    //
-    // Strangely, there is no way to change the value of the underlying
-    // code that our marker points at without destroying the marker too,
-    // so we'll need to rebuild our marker and associated widget.
-
-    var where = this.marker.find();
-    var value = this.value;
-    this.marker.clear();
-    this.codeMirror.replaceRange(value, where.from, where.to);
-    var newTo = this.codeMirror.posFromIndex(
-      this.codeMirror.indexFromPos(where.from) + value.length
-    );
-    this._buildWidget(where.from, newTo);
-  }
-};
-
-var hackables = {
-  'type-the-word': function(codeMirror) {
-    return {
-      'winbg': new ColorWidget({
-        from: {line:9, ch:22},
-        to: {line:9, ch:29},
-        title: 'Background color for win screen.',
-        codeMirror: codeMirror
-      }),
-      'losebg': new ColorWidget({
-        from: {line: 13, ch: 22}, to: {line: 13, ch: 29},
-        title: 'Background color for lose screen.',
-        codeMirror: codeMirror
-      }),
-      'lettercolor': new ColorWidget({
-        from: {line: 36, ch: 11}, to: {line: 36, ch: 16},
-        title: 'Color of letters to be typed.',
-        defaultValue: '#000000',
-        codeMirror: codeMirror
-      })
-    };
-  }
-};
-
 function setupDebugFunctionality(codeMirror, fields) {
   // Press CTRL+SHIFT+SPACE to see selection extents.
   $(codeMirror.getWrapperElement()).on('keyup', function(e) {
