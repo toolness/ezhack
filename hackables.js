@@ -23,6 +23,20 @@ var hackables = {
         prompt: 'Enter new instructions.',
         filter: TextWidget.filters.html,
         codeMirror: codeMirror
+      }),
+      'wintext': new TextWidget({
+        from: {line: 114, ch: 22}, to: {line: 114, ch: 30},
+        title: 'Text shown when player wins.',
+        prompt: 'Enter new win text.',
+        filter: TextWidget.filters.js,
+        codeMirror: codeMirror
+      }),
+      'losetext': new TextWidget({
+        from: {line: 144, ch: 22}, to: {line: 144, ch: 29},
+        title: 'Text shown when player loses.',
+        prompt: 'Enter new lose text.',
+        filter: TextWidget.filters.js,
+        codeMirror: codeMirror
       })
     };
   }

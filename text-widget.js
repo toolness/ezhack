@@ -62,5 +62,13 @@ TextWidget.filters = {
   html: {
     escape: _.escape.bind(_),
     unescape: _.unescape.bind(_)
+  },
+  js: {
+    escape: function(s) {
+      return JSON.stringify(s);
+    },
+    unescape: function(s) {
+      return esprima.parse(s).body[0].expression.value;
+    }
   }
 };
