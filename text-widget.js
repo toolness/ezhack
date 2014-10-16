@@ -5,6 +5,7 @@ function TextWidget(options) {
 }
 
 TextWidget.prototype = _.extend(Object.create(Widget.prototype), {
+  constructor: TextWidget,
   defaultTitle: 'Click to edit text.',
   _createEl: function() {
     return $('<button class="hackable"></button>');

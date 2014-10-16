@@ -3,6 +3,7 @@ function ColorWidget(options) {
 }
 
 ColorWidget.prototype = _.extend(Object.create(Widget.prototype), {
+  constructor: ColorWidget,
   defaultTitle: 'Click to edit color.',
   _createEl: function() {
     return $('<input class="hackable"></input>');
